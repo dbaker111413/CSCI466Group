@@ -1,0 +1,95 @@
+<style>
+.patientTable{
+    position: relative;
+    width: 99%;
+    height: 600px;
+    background-color: #EFD9C1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+</style>
+
+<body>
+
+  <div class="patientTable">
+  <form name="patientForm" id="patientForm" action="Patients.php" method="post">
+    <select id="patientSelect" name="patientSelect" onchange="selectPatient()">
+      <?php echo $patient->pFirstName == "" ? "" : '<option>'.$patient->PID.". ".$patient->pLastName.", ".$patient->pFirstName.'</option>'; ?>
+      <option><?php echo $patientSelectDefault ?></option>
+      <?php echo $patientSelect ?>
+    </select>
+    <input type="hidden" id="patientSelected" name="patientSelected" value="0"></input><br>
+
+    <label name="labelText" id="labelText"><?php echo $labelText ?></label><br>
+    <input type="text" name="fName" id="fName" placeholder="First Name" onchange="textBoxCheck()" value=<?php echo '"'.$patient->pFirstName.'"' ?>></input><br>
+    <input type="text" name="lName" id="lName" placeholder="Last Name" onchange="textBoxCheck()" value=<?php echo '"'.$patient->pLastName.'"' ?>></input><br>
+    <input type="button" id="brsubmit" onclick="validate()" value="<?php echo $submitText ?>"></input>
+    <a href="http://courses.cs.niu.edu/~cs566208/CSCI466Group/php/Patients.php"> <input type="button" value="Reset"></input> </a>
+    <input type="hidden" name="patientUpdateAdd" id="patientUpdateAdd" value="0"></input>
+    <input type="hidden" name="isInsert" id="isInsert" value="0"></input>
+  </form>
+  </div>
+
+  <script>
+    function selectPatient(){
+     
+      if(document.getElementById("patientSelect").value == <?php echo '"'.$patientSelectDefault.'"'; ?>)
+      {
+        document.getElementById("patientSelected").value = "0";
+        document.getElementById("isInsert").value = "0";
+      }
+      else 
+      {
+        document.getElementById("patientSelected").value = "1";
+        document.getElementById("isInsert").value = "1";
+      }
+
+      document.getElementById("patientForm").submit();
+    }
+
+    function textBoxCheck(){
+      if(document.getElementById("fName").value == "" && document.getElementById("lName").value == ""){
+        document.getElementById("labelText").innerHTML = "Insert new Patient";
+        document.getElementById("brsubmit").value = "Create";
+        document.getElementById("isInsert").value = "0";
+      }
+    }
+
+    function validate(){
+
+      if(document.getElementById("fName").value == ""){
+        document.getElementById("fName").focus();
+        alert("Patient must have First Name!");
+        return;
+      }
+
+      if(document.getElementById("lName").value == ""){
+        document.getElementById("lName").focus();
+        alert("Patient must have Last Name!");
+        return;
+      }
+
+     document.getElementById("patientUpdateAdd").value = "1";
+     <!--document.getElementById("isInsert").value = "1";-->
+
+      if(document.getElementById("patientSelect").value == <?php echo '"'.$patientSelectDefault.'"'; ?>)
+      {
+        document.getElementById("patientSelected").value = "0";
+        document.getElementById("isInsert").value = "0";
+      }
+      else
+      {
+        document.getElementById("patientSelected").value = "1";
+        document.getElementById("isInsert").value = "1";
+      }
+
+
+
+     document.getElementById("patientForm").submit();
+    }
+
+
+  </script>
+</body>

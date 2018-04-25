@@ -1,0 +1,29 @@
+<html>
+
+<!-- CSS Container for the header layout-->
+<style>
+.header 
+{
+    font-family: Andale Mono, monospace; 
+    width: auto;
+    height: auto;
+    background-color: #CCCBC6;
+    color: black;
+    text-align: center;
+    padding: 1em;
+    margin-bottom: 10px;
+}
+</style>
+
+<title><?php echo $pageTitle ?></title>
+
+<div class="header">
+    <table align="center" style="text-align: center" >
+      <h1 style="text-align: center">Schtein & Schtein: <?php echo $pageTitle ?></h1
+      <tr>
+        <td width="150"><a href="Therapists.php">Therapists</a></td>
+	<td width="150"><a href="Exercise.php">Exercises</a></td>
+	<td width="150"><a href="Patients.php">Patients</a></td>
+      </tr>
+    </table>
+</div>

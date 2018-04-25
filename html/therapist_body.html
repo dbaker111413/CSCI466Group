@@ -1,0 +1,155 @@
+<body>
+
+<!-- This creates a css layout for two column
+     The left column (column1) will have the input box
+     The right column (column2) will display the output
+-->
+<style type="text/css">
+
+.column1 {
+    border: solid;
+    border-color: #FFFFFF;
+    width: auto;
+    padding: 5px;
+    height: 600px;
+    background-color: #C7D8C6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+</style>
+
+
+<div class="column1">
+<form name="therapist" id="therapist" action="Therapists.php" method="post">
+
+  <table align="center" style="text-align: center">
+  <tr>
+    <td>
+    <label for="selectTherapist">Therapist</label>
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <select name="selectTherapist" id="selectTherapist" onchange="therChange()">
+	<?php echo $therapist->tFirstName == "" ? "" : '<option>'.$therapist->TID.". ".$therapist->tLastName.", ".$therapist->tFirstName.'</option>'; ?>
+        <option>-- Select Therapist --</option>
+        <?php echo $therapistSelect; ?>
+      </select>
+      <input type="hidden" id="tChange" name="tChange" value="0"></input>
+    </td>
+  </tr>
+
+<!--  <tr>
+    <td>
+    </td>
+  </tr> -->
+  </table>
+
+  <br>
+  <br>
+  <br>
+
+  <table name="createAppt" id="createAppt" style="<?php echo $createApptVisibility; ?>">
+    <tr><th colspan="3">Create New Appointment:</th></tr> 
+    <tr>
+      <td>Select a patient: </td>
+      <td colspan="2" align="left">
+	<select name="patientSelect" id="patientSelect">
+	  <option>-- Select Patient --</option>
+	  <?php echo $patientSelect ?>
+	</select>
+      </td>
+    </tr>
+    <tr>
+      <td>Select an Exercise: </td>
+      <td colspan="2" align="left">
+	<select name="exerciseSelect" id="exerciseSelect">
+	  <option>-- Select Exercise --</option>
+	  <?php echo $exerciseSelect ?>
+	</select>
+      </td>
+    </tr>
+    <tr>
+      <td>Select a date:<td>
+      <td><input type="date" name="apptDate" id="apptDate"></input></td>
+    </tr>
+    <tr>
+      <td>Select a time:<td>
+      <td align="left"><input type="time" name="apptTime" id="apptTime"></input></td>
+    </tr>
+    <tr>
+      <td align="center"><button type="button" onclick="validate()">Create</button></td>
+      <td align="center"><button type="reset">Reset</button></td>
+    </tr>
+  </table><br>
+  <table align="center" style="<?php echo $apptTableVisibility ?>">
+    <tr style="background-color: <?php echo $rowColor1 ?>"><td>Patient First Name</td><td>Patient Last Name</td>
+      <td>Body Part</td><td>Band Color</td><td>Reps</td><td>Date</td><td>Time</td></tr>
+    <?php echo $apptDisplay ?>
+  </table>
+  <input type="hidden" name="apptAdd" id="apptAdd" value="0"></input>
+</form>
+</div>
+
+<script>
+  function therChange(){
+    
+    if(document.getElementById("selectTherapist").value == "-- Select Therapist --") {
+       document.getElementById("tChange").value = "0";
+    }
+    else{
+       document.getElementById("tChange").value = "1";
+    }
+
+    document.getElementById("therapist").submit();
+
+  }
+
+  function validate(){
+    if(document.getElementById("patientSelect").selectedIndex == 0){
+      document.getElementById("patientSelect").focus();
+      alert("A patient must be selected!");
+      return;
+    }
+
+    if(document.getElementById("exerciseSelect").selectedIndex == 0){
+      document.getElementById("exerciseSelect").focus();
+      alert("An exercise must be selected!");
+      return;
+    }
+
+    var today = new Date();
+    var date = today.getFullYear() + "-";
+    var month = (today.getMonth()+1);
+    if(month < 10){
+      date += "0" + month;
+    }
+    else
+    {	       
+      date += month;
+    }
+    date += "-" + today.getDate();
+
+    if(document.getElementById("apptDate").value == ""
+       || document.getElementById("apptDate").value < date){
+	document.getElementById("apptDate").focus();
+        alert("Date must be selected and be on today's date or later!");
+        return;
+    }											      
+    
+    if(document.getElementById("apptTime").value == ""){
+      document.getElementById("apptTime").focus();
+      alert("Time must be selected and be later than the current time!");
+      return;
+    }
+
+    document.getElementById("apptAdd").value = "1";
+    document.getElementById("therapist").submit();
+  }
+
+</script>
+</body>
