@@ -47,6 +47,20 @@ insert into Patient (pFirstName, pLastName) values ('Daniel', 'Baker');
 insert into Patient (pFirstName, pLastName) values ('Roger', 'Huxley');
 insert into Patient (pFirstName, pLastName) values ('Pavlov', 'DolphinShtien Jr.');
 
+create table Has(
+  TID int,
+  PID int,
+  primary key(TID, PID),
+  foreign key(TID) references Therapist(TID),
+  foreign Key(PID) references Patient(PID)
+);
+
+insert into Has (TID, PID) values (2, 6);
+insert into Has (TID, PID) values (1, 1);
+insert into Has (TID, PID) values (3, 2);
+insert into Has (TID, PID) values (2, 3);
+insert into Has (TID, PID) values (2, 4);
+
 create table Exercise(
   EID int primary key AUTO_INCREMENT,
   bodyPart varchar(20),
@@ -71,7 +85,7 @@ create table Appointment(
   EID int,
   apptDate date,
   apptTime time,
-  primary key(AID, TID, PID),
+  primary key(AID, TID, PID, EID),
   foreign key(TID) references Therapist(TID),
   foreign key(PID) references Patient(PID),
   foreign key(EID) references Exercise(EID)

@@ -26,13 +26,23 @@
     <input type="text" name="fName" id="fName" placeholder="First Name" onchange="textBoxCheck()" value=<?php echo '"'.$patient->pFirstName.'"' ?>></input><br>
     <input type="text" name="lName" id="lName" placeholder="Last Name" onchange="textBoxCheck()" value=<?php echo '"'.$patient->pLastName.'"' ?>></input><br>
     <input type="button" id="brsubmit" onclick="validate()" value="<?php echo $submitText ?>"></input>
+    <input type="button" id="brdelete" onclick="deletePatient()" value="Delete"></input>
     <a href="http://courses.cs.niu.edu/~cs566208/CSCI466Group/php/Patients.php"> <input type="button" value="Reset"></input> </a>
     <input type="hidden" name="patientUpdateAdd" id="patientUpdateAdd" value="0"></input>
     <input type="hidden" name="isInsert" id="isInsert" value="0"></input>
+    <input type="hidden" name="isDelete" id="isDelete" value="0"></input>
   </form>
   </div>
 
   <script>
+    /*
+     * Function: selectPatient()
+     * Purpose: Controls what happens when a selection has been made in the Patient drop down
+     *          and the form has not been submitted yet. If the user selects the default text,
+     *          the appropriate values are set and the fields change to insert a new patient rather
+     *          than update an existing one.
+    */
+
     function selectPatient(){
      
       if(document.getElementById("patientSelect").value == <?php echo '"'.$patientSelectDefault.'"'; ?>)
@@ -49,6 +59,12 @@
       document.getElementById("patientForm").submit();
     }
 
+    /*
+     * Function: textBoxCheck()
+     * Purpose: This checks if the user deletes the text in the text boxes, indicating
+     *          they would rather insert a new Patient instead of update an existing Patient
+    */
+
     function textBoxCheck(){
       if(document.getElementById("fName").value == "" && document.getElementById("lName").value == ""){
         document.getElementById("labelText").innerHTML = "Insert new Patient";
@@ -56,6 +72,13 @@
         document.getElementById("isInsert").value = "0";
       }
     }
+
+    /*
+     * Function: validate()
+     * Purpose: Controls what happens when the user clicks the Create/Update button. It does
+     *          some error checking to ensure no empty fields. Depending on certain values, certain
+     *          other values are set. This function calls to submit the form and the patient is inserted/updated.
+    */
 
     function validate(){
 
@@ -72,7 +95,6 @@
       }
 
      document.getElementById("patientUpdateAdd").value = "1";
-     <!--document.getElementById("isInsert").value = "1";-->
 
       if(document.getElementById("patientSelect").value == <?php echo '"'.$patientSelectDefault.'"'; ?>)
       {
@@ -85,10 +107,25 @@
         document.getElementById("isInsert").value = "1";
       }
 
-
-
      document.getElementById("patientForm").submit();
     }
+
+  /*
+     * Function: deletePatient()
+     * Purpose: Controls what happens when the delete button is pressed. The selected patient is deleted.
+    */
+
+  function deletePatient(){
+    if(document.getElementById("patientSelect").value ==  <?php echo '"'.$patientSelectDefault.'"'; ?>){
+     alert("Cannot delete new patient");
+     return;
+    }
+    else{
+     document.getElementById("isDelete").value = "1";
+     document.getElementById("patientForm").submit();
+    }
+
+  }
 
 
   </script>

@@ -5,92 +5,182 @@ require_once("globalFunctions.php");
 require_once("Therapist.php");
 require_once("Patient.php");
 
-// These strings are used to populate the select fields
-$therapistSelect = generateSelectOptions("select concat(TID, '. ', tLastName, ', ', tFirstName) as name from Therapist", array("name"), $conn);
-$patientSelect = generateSelectOptions("select concat(PID, '. ', pLastName, ', ', pFirstName) as name from Patient", array("name"), $conn);
-$exerciseSelect = generateSelectOptions("select concat(EID, '. ', bodyPart, ' - ', bandColor, ' - ', numReps) as exercise from Exercise", array("exercise"), $conn);
-
-// This is used to fill the table of appointments for the selected Therapist
-$patientSQLSelect = "select pFirstName, pLastName, bodyPart, bandColor, numReps, apptDate, apptTime from Patient, Therapist, Exercise, Appointment where Appointment.TID = Therapist.TID and Appointment.PID = Patient.PID and Appointment.EID = Exercise.EID and Therapist.TID=";
-
-// This is the string that is filled with the table html and data from patientSQLSelect
-$apptDisplay = "";
-
-// this is used to set the visibility of the create appointment and the appointment table
-$createApptVisibility = "visibility: hidden";
-$apptTableVisibility = "visibility: hidden";
-
-// this is the therapist who has been selected. Values are blank when none is selected
+// therapist object for managing therapist data
 $therapist = new Therapist($conn);
 
-// colors for the grid rows
-$rowColor0 = "#B7D8B6";
-$rowColor1 = "#CCCBC6";
+// strings for the therapist select box
+$therapistSelectDefault = "-- Select Therapist --";
 
-// check if there has been a post
-if($_SERVER['REQUEST_METHOD'] == 'POST'){
+// strings for notifying the user whether this is an update or create
+$labelText = "Insert New Therapist:";
+$submitText = "Create";
 
-  // first, check if an appointment was added. Data is validated client-side, so this cannot
-  // occur without all fields having appropriate data entered
-  if(isset($_POST['apptAdd']) && $_POST['apptAdd'] == "1"){
-    // insert the new appointment into the database
-    $insertSQL = "insert into Appointment (TID, PID, EID, apptDate, apptTime) values (?, ?, ?, ?, ?)";
-    list($TID, $blah) = explode(".", $_POST['selectTherapist']);
-    list($PID, $blah1) = explode(".", $_POST['patientSelect']);
-    list($EID, $blah2) = explode(".", $_POST['exerciseSelect']);
-    $apptDate = $_POST['apptDate'];
-    $apptTime = $_POST['apptTime'];
-    
-    try{
-      $stmt = $conn->prepare($insertSQL);
-      $stmt->execute(array($TID, $PID, $EID, $apptDate, $apptTime));
-    }
-    catch(PDOException $e){
-      $showAlert($e->getMessage());
-    }
-    catch(Exception $e){
-      $showAlert($e->getMessage());
-    }
+// used to fill the html patient table
+$patientTable = "";
+$count = 0;
+
+// get the count of available patients
+/// HERE START HERE
+$pCount = 0;
+$countSQL = "select count(*) as count from Patients";
+try{
+  foreach($conn->query($countSQL) as $row){
+    $pCount = $row['count'];
+    showAlert($pCount);
+  }
+}
+catch(PDOException $e){ $e->getMessage(); }
+catch(Exception $e){}
+
+
+// handle a post
+if($_SERVER['REQUEST_METHOD'] == "POST"){
+
+  // create an array of PIDs checked by the user
+  $newCounter = 0;
+  $PIDs = array();
+  while($newCounter < $pCount){
+    showAlert($newCounter);
+    if(isset($_POST['check'.$newCounter])) { array_push($PIDs, $_POST['id'.$newCounter]);}
+    $newCounter++;
   }
 
-  if((isset($_POST['tChange']) && $_POST['tChange'] == "1")
-      || (isset($_POST['selectTherapist']) && $_POST['selectTherapist'] != "-- Select Therapist --")){
-    $createApptVisibility = "";
-    $apptTableVisibility = "";
-    $therapist->setTherapist($_POST['selectTherapist']);
+  // check if user wants to delete the therapist
+  if(isset($_POST['therapistDelete']) && $_POST['therapistDelete'] == "1"){
+    // therapist must be selected for this even to occur
+    $therapist->setTherapist($_POST['therapistSelect']);
 
-    // appointment list needs to be generated
-    $patientSQLSelect .= $therapist->TID;
+    // to delete this therapist, all "Has" rows must be deleted first
+    $hasDeleteSQL = "delete from Has where TID=?";
+    $deleteSQL = "delete from Therapist where TID=?";
     try{
-      $results = $conn->query($patientSQLSelect);
-      $count = 0;
-      foreach($results as $row){
-        $color = "";
-	if($count % 2 == 0) { $color = $rowColor0; }
-	else { $color = $rowColor1; }
-	$count++;
-        $apptDisplay .= "<tr style='background-color: ".$color."'>";
-	$apptDisplay .= "<td>".$row['pFirstName']."</td>";
-	$apptDisplay .= "<td>".$row['pLastName']."</td>";
-	$apptDisplay .= "<td>".$row['bodyPart']."</td>";
-	$apptDisplay .= "<td>".$row['bandColor']."</td>";
-	$apptDisplay .= "<td>".$row['numReps']."</td>";
-	$apptDisplay .= "<td>".$row['apptDate']."</td>";
-	$apptDisplay .= "<td>".$row['apptTime']."</td>";
-	$apptDisplay .= "</tr>";
+      $hasDelete = $conn->prepare($hasDeleteSQL);
+      $hasDelete->execute(array($therapist->TID));
+      $stmt = $conn->prepare($deleteSQL);
+      $stmt->execute(array($therapist->TID));
+      showAlert("Therapist Deleted");
+      $therapist = new Therapist($conn);
+    }
+    catch(PDOException $e) { showAlert($e->getMessage()); }
+    catch(Exception $e) { showAlert($e->getMessage()); }
+  }
+  
+  // check if the user wants to insert new or update existing
+  if(isset($_POST['therapistSelected']) && $_POST['therapistSelected'] == "1"){
+    // this is an update instead of an insert
+    $labelText = "Update Existing Therapist:";
+    $submitText = "Update";
+
+    // get the therapist ID from the select post value
+    $therapist->setTherapist($_POST['therapistSelect']);
+
+  }
+
+  // check if the user clicked submit
+  if(isset($_POST['therapistUpdateAdd']) && $_POST['therapistUpdateAdd'] == "1"){
+    // determine if this is an update or an insert
+    if($_POST['therapistSelected'] == "1"){
+      // update
+      $therapist->setTherapist($_POST['therapistSelect']);
+      $therapist->tFirstName = $_POST['fName'];
+      $therapist->tLastName = $_POST['lName'];
+      $therapist->phone = $_POST['phone'];
+      $therapist->numPatients = count($PIDs);
+
+      // before updating the database, the 'Has' relationships must be updated
+      $deleteSQL = "delete from Has where TID=?";
+      $insertSQL = "insert into Has (TID, PID) values (?, ?)";
+      try{
+        // first delete the old relationships
+        $deleteStmt = $conn->prepare($deleteSQL);
+	$deleteStmt->execute(array($therapist->TID));
+
+        // now, insert the new relationships
+	foreach($PIDs as $PID){
+          $insertStmt = $conn->prepare($insertSQL);
+	  $insertStmt->execute(array($therapist->TID, $PID));
+	  showAlert("Inserted ".$PID);
+        }
       }
+      catch(PDOException $e){
+        showAlert("Error Occurred while trying to update therapist/patient status\n".$e->getMessage());
+      }
+
+      $therapist->updateDatabase();
+      showAlert("Therapist Updated: ".$therapist->tFirstName." ".$therapist->tLastName);
     }
-    catch(PDOException $e){
-      $showAlert($e->getMessage());
-    }
-    catch(Exception $e){
-      $showAlert($e->getMessage());
+    else{
+      // insert
+      $therapist->tFirstName = $_POST['fName'];
+      $therapist->tLastName = $_POST['lName'];
+      $therapist->phone = $_POST['phone'];
+      $therapist->numPatients = count($PIDs);      
+      $therapist->addToDatabase();
+
+      // now create the therapist/patient relationships
+      $insertSQL = "insert into Has (TID, PID) values((select max(TID) from Therapist), ?)";
+      try{
+      	foreach($PIDs as $PID){
+          $stmt = $conn->prepare($insertSQL);
+	  $stmt->execute(array($PID));
+      	} 
+      }
+      catch(PDOException $e){
+        showAlert("Error Occurred while trying to update therapist/patient status\n".$e->getMessage());
+      }
+      
+      showAlert("Therapist Added: ".$therapist->tFirstName." ".$therapist->tLastName);
+      $therapist = new Therapist($conn); // clear the output
     }
   }
 }
 
+// check if therapist has been selected. If so, determine which patients it is connected to.
+$currentPatients = array();
+if($therapist->TID != 0){
+  $tSelectSQL = "select PID from Has where TID=".$therapist->TID;
+  try{
+    foreach($conn->query($tSelectSQL) as $row){
+      array_push($currentPatients, $row['PID']);
+    }
+  }
+  catch(PDOException $e){}
+  catch(Exception $e){}
+}
+
+$rowColor0 = "#EBB8C1";
+$rowColor1 = "#EBA8B1";
+// query the patients and fill the table
+$patientSQL = "select PID, concat(pLastName, ', ', pFirstName) as name from Patient";
+try{
+  foreach ($conn->query($patientSQL) as $row){
+    $color = "";
+    $checked = "";
+    if($count % 2 == 0) { $color = $rowColor0; }
+    else { $color = $rowColor1; }
+
+    // check if the current PID is already connected to the selected therapist (if applicable)
+    if(in_array($row['PID'], $currentPatients)){
+      $checked = "checked";
+    }
+    
+    $patientTable .= "<tr style='background-color: ".$color."'>";
+    $patientTable .= "<td><input type='checkbox' name='check".$count."' id='check".$count."' ".$checked."></input></td>";
+    $patientTable .= "<td><label>".$row['name']."</label>";
+    $patientTable .= "<input type='hidden' name='id".$count."' id='id".$count."' value='".$row['PID']."'></input></td>";
+    $patientTable .= "</tr>";
+    $count++;
+  } 
+}
+catch(PDOException $e){}
+catch(Exception $e){}
+
+
+// the select options for the therapist
+$therapistSelect = generateSelectOptions("select concat(TID, '. ', tLastName, ', ', tFirstName) as therapist from Therapist", array("therapist"), $conn);
+
 $pageTitle = "Therapists";
 include("../html/header.html");
-include("../html/therapist_body.html");
+include("../html/create_therapist_body.html");
 include("../html/footer.html");
 ?>

@@ -14,8 +14,8 @@
   require_once("Patient.php");
 
   $patientSelectDefault = "-- Select Patient --";
-  $submitText = "Create";
-  $labelText = "Insert new Patient";
+  $submitText = "Add";
+  $labelText = "Add new Patient";
 
 
   $patientSQLSelect = "select * from Patient,Appointment where Appointment.PID =";
@@ -26,9 +26,10 @@
   // check if there has been a post
   if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
+    //if the Update/Create button was pressed
     if(isset($_POST['patientUpdateAdd']) && $_POST['patientUpdateAdd'] == "1"){
-     // insert the new appointment into the database
 
+     // if inserting a new Patient
      if($_POST['isInsert'] == "0"){
       if(isset($_POST['patientSelect'])){
          $insertSQL = "insert into Patient (pFirstName, pLastName) values (?, ?)";
@@ -50,6 +51,7 @@
          echo $e->getMessage();
        }
      }
+     //if updating an existing Patient
      else if ($_POST['isInsert'] == "1"){
 
        if(isset($_POST['patientSelect'])){
@@ -71,20 +73,42 @@
         echo $e->getMessage();
        }
 
-     }
+     }//end else if
 
-  }
-
+   }//end if Create/update button
 
     if((isset($_POST['patientSelected']) && $_POST['patientSelected'] == "1") ||
        (isset($_POST['patientSelect']) && $_POST['patientSelect'] != "-- Select Patient --")){
 
-      $patient->setPatient($_POST['patientSelect']);
-      $labelText = "Update ".$patient->pFirstName." ".$patient->pLastName;
-      $submitText = "Update";
+       $patient->setPatient($_POST['patientSelect']);
+       $labelText = "Update ".$patient->pFirstName." ".$patient->pLastName;
+       $submitText = "Update";
 
     }
 
+  }
+
+  if(isset($_POST['isDelete']) && $_POST['isDelete'] == "1"){
+     $deleteSQL = "delete from Patient where PID=?";
+     list($PID, $blah) = explode(".", $_POST['patientSelect']);
+
+     try{
+       $stmt = $conn->prepare($deleteSQL);
+       $stmt->execute(array($PID));
+       showAlert("Patient Deleted: ".$_POST['fName']." ".$_POST['lName']);
+     }
+     catch(PDOException $e){
+      showAlert($e->getMessage());
+      //echo $e->getMessage();
+     }
+     catch(Exception $e){
+      showAlert($e->getMessage());
+      //echo $e->getMessage();
+     }
+
+     $patient = new Patient($conn);
+     $labelText = "Add new Patient";
+     $submitText = "Add";
   }
 
   $patientSelect = generateSelectOptions("select concat(PID, '. ', pLastName, ', ', pFirstName) as name from Patient", array("name"), $conn);

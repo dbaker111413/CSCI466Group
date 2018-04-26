@@ -58,5 +58,39 @@
         showAlert($e->getMessage());
       }
     }
+
+    // updates the therapist object using the ID
+    public function updateDatabase(){
+      $updateSQL = "update Therapist set tFirstName=?, tLastName=?, numPatients=?, phone=? where TID=?";
+
+      // wrap update in a try-catch block
+      try{
+        $stmt = $this->conn->prepare($updateSQL);
+        $stmt->execute(array($this->tFirstName, $this->tLastName, $this->numPatients, $this->phone, $this->TID));
+      }
+      catch (PDOException $e){
+        showAlert($e->getMessage());
+      }
+      catch(Exception $e){
+        showAlert($e->getMessage());
+      }
+    }
+
+    // inserts a new Therapist into the database
+    public function addToDatabase(){
+      $insertSQL = "insert into Therapist (tFirstName,tLastName,numPatients,phone) values(?,?,?,?)";
+
+      // wrap insert in a try-catch block
+      try{
+        $stmt = $this->conn->prepare($insertSQL);
+        $stmt->execute(array($this->tFirstName, $this->tLastName, $this->numPatients, $this->phone));
+      }
+      catch (PDOException $e){
+        showAlert($e->getMessage());
+      }
+      catch(Exception $e){
+        showAlert($e->getMessage());
+      }
+    } 
   }
 ?>
