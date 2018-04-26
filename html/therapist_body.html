@@ -6,22 +6,46 @@
 -->
 <style type="text/css">
 
-.column1 {
+* {
+    box-sizing: border-box;
+}
+
+.column2 {
+    text-align: center;
     border: solid;
     border-color: #FFFFFF;
-    width: auto;
-    padding: 5px;
-    height: 600px;
+    width: 75%;
+    height: 400px;
+    background-color: #EFD9C1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+.column1 {
+    float: left;
+    border: solid;
+    border-color: #FFFFFF;
+    width: 25%;
+    height: 400px;
     background-color: #C7D8C6;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto;
+    margin: 0;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 </style>
 
 
+<div class="row">
 <div class="column1">
 <form name="therapist" id="therapist" action="Appointments.php" method="post">
 
@@ -48,10 +72,6 @@
     </td>
   </tr> -->
   </table>
-
-  <br>
-  <br>
-  <br>
 
   <table name="createAppt" id="createAppt" style="<?php echo $createApptVisibility; ?>">
     <tr><th colspan="3">Create New Appointment:</th></tr> 
@@ -86,13 +106,16 @@
       <td align="center"><button type="reset">Reset</button></td>
     </tr>
   </table><br>
-  <table align="center" style="<?php echo $apptTableVisibility ?>">
+  </div>
+  <div class="column2">
+  <table align="center" style="<?php echo $apptTableVisibility ?>; font-size: 24">
     <tr style="background-color: <?php echo $rowColor1 ?>"><td>Patient First Name</td><td>Patient Last Name</td>
       <td>Body Part</td><td>Band Color</td><td>Reps</td><td>Date</td><td>Time</td></tr>
     <?php echo $apptDisplay ?>
   </table>
   <input type="hidden" name="apptAdd" id="apptAdd" value="0"></input>
 </form>
+</div>
 </div>
 
 <script>

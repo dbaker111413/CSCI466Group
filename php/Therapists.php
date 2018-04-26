@@ -20,17 +20,15 @@ $patientTable = "";
 $count = 0;
 
 // get the count of available patients
-/// HERE START HERE
 $pCount = 0;
-$countSQL = "select count(*) as count from Patients";
+$countSQL = "select count(*) as count from Patient";
 try{
   foreach($conn->query($countSQL) as $row){
     $pCount = $row['count'];
-    showAlert($pCount);
   }
 }
-catch(PDOException $e){ $e->getMessage(); }
-catch(Exception $e){}
+catch(PDOException $e){ showAlert($e->getMessage()); }
+catch(Exception $e){ showAlert($e->getMessage()); }
 
 
 // handle a post
@@ -40,7 +38,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
   $newCounter = 0;
   $PIDs = array();
   while($newCounter < $pCount){
-    showAlert($newCounter);
     if(isset($_POST['check'.$newCounter])) { array_push($PIDs, $_POST['id'.$newCounter]);}
     $newCounter++;
   }
@@ -51,11 +48,20 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
     $therapist->setTherapist($_POST['therapistSelect']);
 
     // to delete this therapist, all "Has" rows must be deleted first
+    // as well as any appointments
     $hasDeleteSQL = "delete from Has where TID=?";
+    $apptDeleteSQL = "delete from Appointment where TID=?";
     $deleteSQL = "delete from Therapist where TID=?";
     try{
+      // first, delete the 'Has' relationships
       $hasDelete = $conn->prepare($hasDeleteSQL);
       $hasDelete->execute(array($therapist->TID));
+
+      // next, delete the appointments
+      $apptDelete = $conn->prepare($apptDeleteSQL);
+      $apptDelete->execute(array($therapist->TID));
+
+      // finally, delete the therapist
       $stmt = $conn->prepare($deleteSQL);
       $stmt->execute(array($therapist->TID));
       showAlert("Therapist Deleted");
@@ -99,7 +105,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 	foreach($PIDs as $PID){
           $insertStmt = $conn->prepare($insertSQL);
 	  $insertStmt->execute(array($therapist->TID, $PID));
-	  showAlert("Inserted ".$PID);
         }
       }
       catch(PDOException $e){

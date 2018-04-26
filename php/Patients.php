@@ -88,11 +88,25 @@
 
   }
 
+  // handles a delete
   if(isset($_POST['isDelete']) && $_POST['isDelete'] == "1"){
+     // before a patient can be deleted, all of the 'Has' relationships between
+     // the patient and the therapist must be deleted, as well as any appointments
+     $deleteHasSQL = "delete from Has where PID=?";
+     $deleteApptSQL = "delete from Appointment where PID=?";
      $deleteSQL = "delete from Patient where PID=?";
      list($PID, $blah) = explode(".", $_POST['patientSelect']);
 
      try{
+       // first, delete the 'Has' relationships
+       $hasStmt = $conn->prepare($deleteHasSQL);
+       $hasStmt->execute(array($PID));
+
+       // next, delete the Appointments
+       $apptStmt = $conn->prepare($deleteApptSQL);
+       $apptStmt->execute(array($PID));
+
+       // finally, delete the patient
        $stmt = $conn->prepare($deleteSQL);
        $stmt->execute(array($PID));
        showAlert("Patient Deleted: ".$_POST['fName']." ".$_POST['lName']);
