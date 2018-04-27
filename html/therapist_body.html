@@ -1,3 +1,12 @@
+<!--
+
+  Authors: Daniel Baker, Tanner Martin, Jackie Salim, Kevin Tee
+  CSCI 466 Spring 2018
+  
+  Group # 8
+
+  Purpose: Form for creating Appointments
+-->
 <body>
 
 <!-- This creates a css layout for two column
@@ -79,6 +88,7 @@
       <td>Select a patient: </td>
       <td colspan="2" align="left">
 	<select name="patientSelect" id="patientSelect">
+	  <?php echo $noPatientMessage ?>
 	  <option>-- Select Patient --</option>
 	  <?php echo $patientSelect ?>
 	</select>
@@ -108,7 +118,8 @@
   </table><br>
   </div>
   <div class="column2">
-  <table align="center" style="<?php echo $apptTableVisibility ?>; font-size: 24">
+    <table align="center" style="<?php echo $apptTableVisibility ?>; font-size: 24">
+    <tr style="background-color: <?php echo $rowColor0 ?>"><td><label align="center"><?php echo $apptHeader ?></label></td></tr>  
     <tr style="background-color: <?php echo $rowColor1 ?>"><td>Patient First Name</td><td>Patient Last Name</td>
       <td>Body Part</td><td>Band Color</td><td>Reps</td><td>Date</td><td>Time</td></tr>
     <?php echo $apptDisplay ?>

@@ -5,16 +5,17 @@
   Spring 2018
 
   Group Project # 8
-  Purpose of file: Contain object data for a therapist
+  Purpose of file: Contain object data for an exercise.
 
 */
 
   require_once("globalFunctions.php");
 
-  class Patient {
-    public $PID = 0;
-    public $pFirstName = "";
-    public $pLastName = "";
+  class Exercise {
+    public $eID = 0;
+    public $bodyPart = "";
+    public $bandColor = "";
+    public $numReps = 0;
 
     private $conn;
 
@@ -23,27 +24,24 @@
       $this->conn = $conn;
     }
 
-    // uses the first and last name to get the entire patient column data.
-    // expects the name to be in "LastName, FirstName" format
-    public function setPatient($lNameCommafName){
-      // divide the input string
-      list($ID, $Name) = explode('.', $lNameCommafName);
-
+    // Fetch exercise by EID
+    public function setExercise($eID) {
       // create a sql select statement to query the data
-      $selectSQL = "select * from Patient where PID = ".$ID;
+      $query = "select * from Exercise where EID = ".$eID;
 
       // now wrap the query in a try catch block
-      try{
-        $dataArray = $this->conn->query($selectSQL);
+      try {
+        $queryResult = $this->conn->query($query);
         // make sure there is only one row in the array
-        if(count($dataArray) != 1){
+        if(count($queryResult) != 1){
           showAlert("An invalid number of rows were returned, bad query!");
         }
-        else{
-          foreach ($dataArray as $data){
-            $this->PID = $data['PID'];
-            $this->pFirstName = $data['pFirstName'];
-            $this->pLastName = $data['pLastName'];
+        else {
+          foreach ($queryResult as $row){
+            $this->eID = $row['EID'];
+            $this->bodyPart = $row['bodyPart'];
+            $this->bandColor = $row['bandColor'];
+            $this->numReps = $row['numReps'];
           }
         }
       }

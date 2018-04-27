@@ -13,7 +13,7 @@
   require_once("Therapist.php");
   require_once("Patient.php");
 
-  $patientSelectDefault = "-- Select Patient --";
+  $patientSelectDefault = "-- New Patient --";
   $submitText = "Add";
   $labelText = "Add new Patient";
 
@@ -43,12 +43,10 @@
         showAlert("NEW Patient Added: ".$_POST['fName']." ".$_POST['lName']);
        }
        catch(PDOException $e){
-         //showAlert($e->getMessage());
-         echo $e->getMessage();
+         showAlert($e->getMessage());
        }
        catch(Exception $e){
-         //showAlert($e->getMessage());
-         echo $e->getMessage();
+         showAlert($e->getMessage());
        }
      }
      //if updating an existing Patient
@@ -65,12 +63,10 @@
          showAlert("Patient Updated: ".$_POST['fName']." ".$_POST['lName']);
        }
        catch(PDOException $e){
-        //$showAlert($e->getMessage());
-        echo $e->getMessage();
+        showAlert($e->getMessage());
        }
        catch(Exception $e){
-        //$showAlert($e->getMessage());
-        echo $e->getMessage();
+        showAlert($e->getMessage());
        }
 
      }//end else if
@@ -78,7 +74,7 @@
    }//end if Create/update button
 
     if((isset($_POST['patientSelected']) && $_POST['patientSelected'] == "1") ||
-       (isset($_POST['patientSelect']) && $_POST['patientSelect'] != "-- Select Patient --")){
+       (isset($_POST['patientSelect']) && $_POST['patientSelect'] != "-- New Patient --")){
 
        $patient->setPatient($_POST['patientSelect']);
        $labelText = "Update ".$patient->pFirstName." ".$patient->pLastName;

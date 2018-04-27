@@ -10,36 +10,36 @@
 */
   require_once("globalFunctions.php");
   require_once("connection.php");
-  require_once("Therapist.php");
-  require_once("Patient.php");
+  require_once("Exercise.php");
 
-  $patientSelectDefault = "-- Select Patient --";
-  $submitText = "Create";
-  $labelText = "Insert new Patient";
-
-
-  $patientSQLSelect = "select * from Patient,Appointment where Appointment.PID =";
+  $exerciseSelectDefault = "-- Select Exercise --";
+  $submitText = "Add";
+  $labelText = "Add New Exercise";
 
 
-  $patient = new Patient($conn);
+  $query = "SELECT * FROM Exercise WHERE Exercise.EID =";
+
+
+  $exercise = new Exercise($conn);
 
   // check if there has been a post
   if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
-    if(isset($_POST['patientUpdateAdd']) && $_POST['patientUpdateAdd'] == "1"){
-     // insert the new appointment into the database
+    if(isset($_POST['exerciseUpdateAdd']) && $_POST['exerciseUpdateAdd'] == "1"){
+     // insert the new exercise into the database
 
      if($_POST['isInsert'] == "0"){
-      if(isset($_POST['patientSelect'])){
-         $insertSQL = "insert into Patient (pFirstName, pLastName) values (?, ?)";
-         $pFirstName = $_POST['fName'];
-         $pLastName = $_POST['lName'];
+      if(isset($_POST['exerciseSelect'])){
+         $insert = "INSERT INTO Exercise (bodyPart, bandColor, numReps) values (?, ?, ?)";
+         $bodyPart = $_POST['bodyPart'];
+         $bandColor = $_POST['bandColor'];
+         $numReps = $_POST['numReps'];
        }
 
-       try{
-        $stmt = $conn->prepare($insertSQL);
-        $stmt->execute(array($pFirstName, $pLastName));
-        showAlert("NEW Patient Added: ".$_POST['fName']." ".$_POST['lName']);
+       try {
+        $stmt = $conn->prepare($insert);
+        $stmt->execute(array($bodyPart, $bandColor, numReps));
+        showAlert("NEW Exercise working " . $_POST['bodyPart'] . " with " . $_POST['bandColor'] . " band for " . $_POST['numReps'] " reps added.");
        }
        catch(PDOException $e){
          //showAlert($e->getMessage());
@@ -52,15 +52,15 @@
      }
      else if ($_POST['isInsert'] == "1"){
 
-       if(isset($_POST['patientSelect'])){
-         $updateSQL = "update Patient set pFirstName = '".$_POST['fName']."', pLastName = '".$_POST['lName']."' where PID=?";
-         list($PID, $blah) = explode(".", $_POST['patientSelect']);
+       if(isset($_POST['exerciseSelect'])){
+         $update = "UPDATE Exercise SET bodyPart = '" . $_POST['bodyPart'] . "', bandColor = '" . $_POST['bandColor'] . "', numReps = '" . $_POST['numReps'] . "' WHERE EID = ?";
+         $EID = $_POST['exerciseSelect'];
        }
 
-       try{
-         $stmt = $conn->prepare($updateSQL);
-         $stmt->execute(array($PID));
-         showAlert("Patient Updated: ".$_POST['fName']." ".$_POST['lName']);
+       try {
+         $stmt = $conn->prepare($update);
+         $stmt->execute(array($EID));
+         showAlert("Updated exercise working: " . $_POST['bodyPart'] . " with " . $_POST['bandColor'] . " band for " . $_POST['numReps'] " reps added.");;
        }
        catch(PDOException $e){
         //$showAlert($e->getMessage());
@@ -76,22 +76,22 @@
   }
 
 
-    if((isset($_POST['patientSelected']) && $_POST['patientSelected'] == "1") ||
-       (isset($_POST['patientSelect']) && $_POST['patientSelect'] != "-- Select Patient --")){
+    if((isset($_POST['exerciseSelected']) && $_POST['exerciseSelected'] == "1") ||
+       (isset($_POST['exerciseSelect']) && $_POST['exerciseSelect'] != "-- Select Exercise --")){
 
-      $patient->setPatient($_POST['patientSelect']);
-      $labelText = "Update ".$patient->pFirstName." ".$patient->pLastName;
+      $exercise->setExercise($_POST['exerciseSelect']);
+      $labelText = "Update exercise working:" . $_POST['bodyPart'] . " with " . $_POST['bandColor'] . " band for " . $_POST['numReps'] " reps");
       $submitText = "Update";
 
     }
 
   }
 
-  $patientSelect = generateSelectOptions("select concat(PID, '. ', pLastName, ', ', pFirstName) as name from Patient", array("name"), $conn);
+  $exerciseSelect = generateSelectOptions("select concat(EID, '. ', pLastName, ', ', pFirstName) as name from Patient", array("name"), $conn);
 
 
-  $pageTitle = "Patients";
+  $pageTitle = "Exercises";
   include("../html/header.html");
-  include("../html/patient_body.html");
+  include("../html/exercise_body.html");
   include("../html/footer.html");
 ?>

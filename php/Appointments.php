@@ -1,4 +1,18 @@
 <?php
+/***********************************************
+*
+*  Owners: Daniel Baker, Jackie Salim, Tanner Martin, & Kevin Tee
+*  CSCI 466
+*  Spring 2018
+*
+*  Group Project # 8
+*
+*  Purpose of file: Manage creation of appointments
+*                   and values displayed to the user
+*                   on the appointments page.
+*
+************************************************/
+
 
 require_once("connection.php");
 require_once("globalFunctions.php");
@@ -7,7 +21,7 @@ require_once("Patient.php");
 
 // These strings are used to populate the select fields
 $therapistSelect = generateSelectOptions("select concat(TID, '. ', tLastName, ', ', tFirstName) as name from Therapist", array("name"), $conn);
-$patientSelect = "";//generateSelectOptions("select concat(PID, '. ', pLastName, ', ', pFirstName) as name from Patient", array("name"), $conn);
+$patientSelect = "";
 $exerciseSelect = generateSelectOptions("select concat(EID, '. ', bodyPart, ' - ', bandColor, ' - ', numReps) as exercise from Exercise", array("exercise"), $conn);
 
 // This is used to fill the table of appointments for the selected Therapist
@@ -15,10 +29,14 @@ $patientSQLSelect = "select pFirstName, pLastName, bodyPart, bandColor, numReps,
 
 // This is the string that is filled with the table html and data from patientSQLSelect
 $apptDisplay = "";
+$apptHeader = "";
 
 // this is used to set the visibility of the create appointment and the appointment table
 $createApptVisibility = "visibility: hidden";
 $apptTableVisibility = "visibility: hidden";
+
+// used to let the user know that there are no patients for the selected therapist
+$noPatientMessage = "";
 
 // this is the therapist who has been selected. Values are blank when none is selected
 $therapist = new Therapist($conn);
@@ -62,6 +80,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     // show patients available to this therapist
     $patientSelect = generateSelectOptions("select concat(Patient.PID, '. ', pLastName, ', ', pFirstName) as name from Patient, Therapist, Has where Therapist.TID=Has.TID and Patient.PID=Has.PID and Therapist.TID=".$therapist->TID, array("name"), $conn);
 
+    // if the string is empty, then there are no patients
+    if($patientSelect == ""){
+      $noPatientMessage = "<option>No Patients</option>";
+    }
+
     // appointment list needs to be generated
     $patientSQLSelect .= $therapist->TID;
     try{
@@ -82,6 +105,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 	$apptDisplay .= "<td>".$row['apptTime']."</td>";
 	$apptDisplay .= "</tr>";
       }
+      // if there were no rows, count will be 0
+      if($count == 0){
+        $apptHeader = "There are no Appoinments for this Therapist";
+      }
+      else { $apptHeader = "Scheduled Appointments:";}
     }
     catch(PDOException $e){
       $showAlert($e->getMessage());

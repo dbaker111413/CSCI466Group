@@ -1,4 +1,16 @@
 <?php
+/***********************************************
+*
+*  Owners: Daniel Baker, Jackie Salim, Tanner Martin, & Kevin Tee
+*  CSCI 466
+*  Spring 2018
+*
+*  Group Project # 8
+*
+*  Purpose of file: Provide common functions used by many forms
+*
+************************************************/
+
 
 // shows an alert to the user using client-side javascript
 function showAlert($message){

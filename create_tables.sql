@@ -11,9 +11,7 @@
 ################################################
 
 ## drop tables if they exist before attempting to create them
-drop table if exists Therapy;
 drop table if exists Has;
-drop table if exists Performs;
 drop table if exists Appointment;
 drop table if exists Therapist;
 drop table if exists Patient;

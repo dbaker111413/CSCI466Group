@@ -1,4 +1,16 @@
 <?php
+/***********************************************
+*
+*  Owners: Daniel Baker, Jackie Salim, Tanner Martin, & Kevin Tee
+*  CSCI 466
+*  Spring 2018
+*
+*  Group Project # 8
+*
+*  Purpose of file: Manage creation, updating, and deletion of therapists
+*                   and values displayed to the user on the therapists page.
+*
+************************************************/
 
 require_once("connection.php");
 require_once("globalFunctions.php");
@@ -9,7 +21,7 @@ require_once("Patient.php");
 $therapist = new Therapist($conn);
 
 // strings for the therapist select box
-$therapistSelectDefault = "-- Select Therapist --";
+$therapistSelectDefault = "-- New Therapist --";
 
 // strings for notifying the user whether this is an update or create
 $labelText = "Insert New Therapist:";

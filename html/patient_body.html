@@ -1,3 +1,12 @@
+<!--
+
+  Authors: Daniel Baker, Tanner Martin, Jackie Salim, Kevin Tee
+  CSCI 466 Spring 2018
+  
+  Group # 8
+
+  Purpose: Form for creating/updating/deleting patients
+-->
 <style>
 .patientTable{
     position: relative;
@@ -117,10 +126,10 @@
 
   function deletePatient(){
     if(document.getElementById("patientSelect").value ==  <?php echo '"'.$patientSelectDefault.'"'; ?>){
-     alert("Cannot delete new patient");
+     alert("Nothing to delete");
      return;
     }
-    else{
+    if(confirm("Are you sure you want to delete this patient?")){
      document.getElementById("isDelete").value = "1";
      document.getElementById("patientForm").submit();
     }
