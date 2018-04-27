@@ -28,9 +28,9 @@ create table Therapist(
 );
 
 insert into Therapist (tFirstName, tLastName, numPatients, phone) values('Sigmund', 'Freud', 1, '123-456-7890');
-insert into Therapist (tFirstName, tLastName, numPatients, phone) values('Pavlov', 'DolphinShtein', 3, '321-477-7890');
-insert into Therapist (tFirstName, tLastName, numPatients, phone) values('Joseph', 'ShtalinShtein', 1, '999-876-7890');
-insert into Therapist (tFirstName, tLastName, numPatients, phone) values('Principal', 'ShkinnerShtein', 0, '567-765-7890');
+insert into Therapist (tFirstName, tLastName, numPatients, phone) values('Pavlov', 'DolphinSchtein', 3, '321-477-7890');
+insert into Therapist (tFirstName, tLastName, numPatients, phone) values('Joseph', 'ShtalinSchtein', 1, '999-876-7890');
+insert into Therapist (tFirstName, tLastName, numPatients, phone) values('Principal', 'ShkinnerSchtein', 0, '567-765-7890');
 
 create table Patient(
   PID int primary key AUTO_INCREMENT,

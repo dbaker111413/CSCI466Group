@@ -39,7 +39,7 @@
        try {
         $stmt = $conn->prepare($insert);
         $stmt->execute(array($bodyPart, $bandColor, numReps));
-        showAlert("NEW Exercise working " . $_POST['bodyPart'] . " with " . $_POST['bandColor'] . " band for " . $_POST['numReps'] " reps added.");
+        showAlert("NEW Exercise working " . $_POST['bodyPart'] . " with " . $_POST['bandColor'] . " band for " . $_POST['numReps'] . " reps added.");
        }
        catch(PDOException $e){
          //showAlert($e->getMessage());
@@ -60,7 +60,7 @@
        try {
          $stmt = $conn->prepare($update);
          $stmt->execute(array($EID));
-         showAlert("Updated exercise working: " . $_POST['bodyPart'] . " with " . $_POST['bandColor'] . " band for " . $_POST['numReps'] " reps added.");;
+         showAlert("Updated exercise working: " . $_POST['bodyPart'] . " with " . $_POST['bandColor'] . " band for " . $_POST['numReps'] . " reps added.");;
        }
        catch(PDOException $e){
         //$showAlert($e->getMessage());
@@ -80,18 +80,18 @@
        (isset($_POST['exerciseSelect']) && $_POST['exerciseSelect'] != "-- Select Exercise --")){
 
       $exercise->setExercise($_POST['exerciseSelect']);
-      $labelText = "Update exercise working:" . $_POST['bodyPart'] . " with " . $_POST['bandColor'] . " band for " . $_POST['numReps'] " reps");
+      $labelText = "Update exercise working: " . $_POST['bodyPart'] . " with " . $_POST['bandColor'] . " band for " . $_POST['numReps'] . " reps";
       $submitText = "Update";
 
     }
 
   }
 
-  $exerciseSelect = generateSelectOptions("select concat(EID, '. ', pLastName, ', ', pFirstName) as name from Patient", array("name"), $conn);
+  $exerciseSelect = generateSelectOptions("SELECT EID, bodyPart, bandColor, numReps FROM Exercise AS exercise",array("exercise"), $conn);
 
 
   $pageTitle = "Exercises";
   include("../html/header.html");
-  include("../html/exercise_body.html");
+  include("../html/exercise_body.php");
   include("../html/footer.html");
 ?>
