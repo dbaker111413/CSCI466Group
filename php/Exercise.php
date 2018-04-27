@@ -26,6 +26,8 @@
 
     // Fetch exercise by EID
     public function setExercise($eID) {
+      // parse the EID from the input string
+      list($EID, $blah) = explode(".", $eID);
       // create a sql select statement to query the data
       $query = "select * from Exercise where EID = ".$eID;
 

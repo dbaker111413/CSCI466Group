@@ -165,8 +165,8 @@ if($therapist->TID != 0){
   catch(Exception $e){}
 }
 
-$rowColor0 = "#EBB8C1";
-$rowColor1 = "#EBA8B1";
+$rowColor0 = "#B7D8B6";
+$rowColor1 = "#B9C1B9";
 // query the patients and fill the table
 $patientSQL = "select PID, concat(pLastName, ', ', pFirstName) as name from Patient";
 try{

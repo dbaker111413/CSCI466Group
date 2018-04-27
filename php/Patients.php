@@ -123,7 +123,6 @@
 
   $patientSelect = generateSelectOptions("select concat(PID, '. ', pLastName, ', ', pFirstName) as name from Patient", array("name"), $conn);
 
-
   $pageTitle = "Patients";
   include("../html/header.html");
   include("../html/patient_body.html");

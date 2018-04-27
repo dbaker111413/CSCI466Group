@@ -1,0 +1,152 @@
+<!--
+
+  Authors: Daniel Baker, Tanner Martin, Jackie Salim, Kevin Tee
+  CSCI 466 Spring 2018
+
+  Group # 8
+
+  Purpose: Form for creating/updating/deleting exercises
+  -->
+<!--<?php
+        echo "<option>Exercise Number: " . $exercise->eID . " working " . $exercise->bodyPart . " with " . $exercise->bandColor . " band for" . $exercise->numReps . "reps</option>";
+      ?> -->
+<style>
+.exerciseTable{
+    position: relative;
+    width: 99%;
+    height: 600px;
+    background-color: #EFD9C1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+</style>
+
+<body>
+
+  <div class="exerciseTable">
+  <form name="exerciseForm" id="exerciseForm" action="Exercises.php" method="post">
+    <select id="exerciseSelect" name="exerciseSelect" onchange="selectExercise()">      
+      <option>
+        <?php echo $exerciseSelectDefault; ?>
+      </option>
+      <?php echo $exerciseSelect; ?>
+    </select>
+    <input type="hidden" id="exerciseSelected" name="exerciseSelected" value="0"></input><br>
+
+    <label name="labelText" id="labelText"><?php echo $labelText; ?></label><br>
+    <input type="text" name="bodyPart" id="bodyPart" placeholder="Body Part" onchange="textBoxCheck()" value=<?php echo '"'.$exercise->bodyPart.'"' ?>></input><br>
+    <input type="text" name="bandColor" id="bandColor" placeholder="Band Color" onchange="textBoxCheck()" value=<?php echo '"'.$exercise->bandColor.'"' ?>></input><br>
+    <input type="text" name="numReps" id="numReps" placeholder="Number of Reps" onchange="textBoxCheck()" value=<?php echo '"'.$exercise->numReps.'"' ?>></input><br>
+    <input type="button" id="brsubmit" onclick="validate()" value="<?php echo $submitText ?>"></input>
+    <input type="button" id="brdelete" onclick="deleteExercise()" value="Delete"></input>
+    <a href="../php/Exercises.php"> <input type="button" value="Reset"></input></a>
+    <input type="hidden" name="exerciseUpdateAdd" id="exerciseUpdateAdd" value="0"></input>
+    <input type="hidden" name="isInsert" id="isInsert" value="0"></input>
+    <input type="hidden" name="isDelete" id="isDelete" value="0"></input>
+  </form>
+  </div>
+
+  <script>
+    /*
+     * Function: selectExercise()
+     * Purpose: Controls what happens when a selection has been made in the Exercise drop down
+     *          and the form has not been submitted yet. If the user selects the default text,
+     *          the appropriate values are set and the fields change to insert a new exercise rather
+     *          than update an existing one.
+    */
+
+    function selectExercise(){
+
+      if(document.getElementById("exerciseSelect").value == <?php echo '"'.$exerciseSelectDefault.'"'; ?>)
+      {
+        document.getElementById("exerciseSelected").value = "0";
+        document.getElementById("isInsert").value = "0";
+      }
+      else
+      {
+        document.getElementById("exerciseSelected").value = "1";
+        document.getElementById("isInsert").value = "1";
+      }
+
+      document.getElementById("exerciseForm").submit();
+    }
+
+    /*
+     * Function: textBoxCheck()
+     * Purpose: This checks if the user deletes the text in the text boxes, indicating
+     *          they would rather insert a new Exercise instead of update an existing Exercise
+    */
+
+    function textBoxCheck(){
+      if(document.getElementById("bodyPart").value == "" && document.getElementById("bandColor").value == "" && document.getElementById("numReps").value == ""){
+        document.getElementById("labelText").innerHTML = "Insert new Exercise";
+        document.getElementById("brsubmit").value = "Create";
+        document.getElementById("isInsert").value = "0";
+      }
+    }
+
+    /*
+     * Function: validate()
+     * Purpose: Controls what happens when the user clicks the Create/Update button. It does
+     *          some error checking to ensure no empty fields. Depending on certain values, certain
+     *          other values are set. This function calls to submit the form and the exercise is inserted/updated.
+    */
+
+    function validate(){
+
+      if(document.getElementById("bodyPart").value == ""){
+        document.getElementById("bodyPart").focus();
+        alert("The body part the exercise targets must be specified!");
+        return;
+      }
+
+      if(document.getElementById("bandColor").value == ""){
+        document.getElementById("bandColor").focus();
+        alert("The color of the resistance bands used in the exercise must be specified!");
+        return;
+      }
+      
+      if(document.getElementById("numReps").value == ""){
+        document.getElementById("numReps").focus();
+        alert("The number of reps to perform must be specified!");
+        return;
+      }
+
+     document.getElementById("exerciseUpdateAdd").value = "1";
+
+      if(document.getElementById("exerciseSelect").value == <?php echo '"'.$exerciseSelectDefault.'"'; ?>)
+      {
+        document.getElementById("exerciseSelected").value = "0";
+        document.getElementById("isInsert").value = "0";
+      }
+      else
+      {
+        document.getElementById("exerciseSelected").value = "1";
+        document.getElementById("isInsert").value = "1";
+      }
+
+     document.getElementById("exerciseForm").submit();
+    }
+
+  /*
+     * Function: deleteExercise()
+     * Purpose: Controls what happens when the delete button is pressed. The selected exercise is deleted.
+    */
+
+  function deleteExercise(){
+    if(document.getElementById("exerciseSelect").value ==  <?php echo '"'.$exerciseSelectDefault.'"'; ?>){
+     alert("Nothing to delete");
+     return;
+    }
+    if(confirm("Are you sure you want to delete this exercise?")){
+     document.getElementById("isDelete").value = "1";
+     document.getElementById("exerciseForm").submit();
+    }
+
+  }
+
+
+  </script>
+</body>

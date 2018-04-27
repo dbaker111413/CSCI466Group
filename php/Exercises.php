@@ -5,7 +5,7 @@
   Spring 2018
 
   Group Project # 8
-  Purpose of file: display a form to create and update patients
+  Purpose of file: display a form to create and update exercises
 
 */
   require_once("globalFunctions.php");
@@ -38,8 +38,8 @@
 
        try {
         $stmt = $conn->prepare($insert);
-        $stmt->execute(array($bodyPart, $bandColor, numReps));
-        showAlert("NEW Exercise working " . $_POST['bodyPart'] . " with " . $_POST['bandColor'] . " band for " . $_POST['numReps'] . " reps added.");
+        $stmt->execute(array($bodyPart, $bandColor, $numReps));
+        showAlert("New Exercise working " . $_POST['bodyPart'] . " with " . $_POST['bandColor'] . " band for " . $_POST['numReps'] . " reps added.");
        }
        catch(PDOException $e){
          //showAlert($e->getMessage());
@@ -59,7 +59,7 @@
 
        try {
          $stmt = $conn->prepare($update);
-         $stmt->execute(array($EID));
+         $stmt->execute(array($eID));
          showAlert("Updated exercise working: " . $_POST['bodyPart'] . " with " . $_POST['bandColor'] . " band for " . $_POST['numReps'] . " reps added.");;
        }
        catch(PDOException $e){
@@ -80,18 +80,19 @@
        (isset($_POST['exerciseSelect']) && $_POST['exerciseSelect'] != "-- Select Exercise --")){
 
       $exercise->setExercise($_POST['exerciseSelect']);
-      $labelText = "Update exercise working: " . $_POST['bodyPart'] . " with " . $_POST['bandColor'] . " band for " . $_POST['numReps'] . " reps";
+      $labelText = "Update exercise working: " . $_POST['bodyPart'] . " with " . $_POST['bandColor'] . " band for " . $_POST['numReps'] . " reps"; 
       $submitText = "Update";
 
     }
 
   }
 
-  $exerciseSelect = generateSelectOptions("SELECT EID, bodyPart, bandColor, numReps FROM Exercise AS exercise",array("exercise"), $conn);
+  $exerciseSelect = generateSelectOptions("select concat(EID, '. ', bodyPart, ', ', bandColor, ', ', numReps) as exercise from Exercise", array("exercise"), $conn);
 
 
   $pageTitle = "Exercises";
   include("../html/header.html");
-  include("../html/exercise_body.php");
+  include("../html/exercise_body.html");
   include("../html/footer.html");
 ?>
+
